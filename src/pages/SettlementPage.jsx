@@ -239,17 +239,20 @@ export default function SettlementPage() {
           </tfoot>
         </table>
         {/* Food Bill & Export Buttons below the box, mobile-friendly (ONLY ONCE) */}
-        <div className="w-full flex justify-between mt-3 mb-2 gap-2">
-          <div>
-            <ExportButton onClick={handleExport} />
-            {exportCopied && <span className="ml-3 text-green-400 font-bold">Copied!</span>}
-          </div>
+        <div className="w-full flex justify-center mt-3 mb-2 gap-3">
           <button
-            className="glass-btn flex items-center gap-2"
-            style={{ background: "rgba(34,197,94,0.18)", backdropFilter: "blur(8px)", transition: "none" }}
+            className="glass-btn flex items-center justify-center gap-2 py-3 text-base font-semibold w-36 max-w-xs bg-blue-700 bg-opacity-50 hover:bg-blue-800 hover:bg-opacity-70 text-white shadow-lg"
+            style={{backdropFilter: 'blur(8px)', border: 'none'}}
+            onClick={handleExport}
+          >
+            <span role="img" aria-label="Export" style={{fontSize: '1.3em'}}>📋</span> Export
+          </button>
+          <button
+            className="glass-btn flex items-center justify-center gap-2 py-3 text-base font-semibold w-36 max-w-xs text-white shadow-lg"
+            style={{ background: "rgba(34,197,94,0.18)", backdropFilter: "blur(8px)", border: 'none' }}
             onClick={handleOpenFoodModal}
           >
-            <span role="img" aria-label="Food">🍽</span> Food Bill
+            <span role="img" aria-label="Food" style={{fontSize: '1.3em'}}>🍽</span> Food Bill
           </button>
         </div>
       </div>

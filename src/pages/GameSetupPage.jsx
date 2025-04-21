@@ -17,7 +17,8 @@ export default function GameSetupPage() {
   // Format gameName as dd-mm-yy
   function getToday() {
     const d = new Date();
-    return `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getFullYear()).slice(-2)}`;
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return `Game on ${String(d.getDate()).padStart(2, "0")}-${months[d.getMonth()]}-${String(d.getFullYear()).slice(-2)}`;
   }
   const [gameName, setGameName] = useState(getToday());
   const [players, setPlayers] = useState(() => {
@@ -28,6 +29,9 @@ export default function GameSetupPage() {
       return [];
     }
   });
+  // Editing state for player names
+  const [editingIdx, setEditingIdx] = useState(null); // index in players array
+  const [editName, setEditName] = useState("");
   const [buyInChips, setBuyInChips] = useState(() => {
     const stored = localStorage.getItem("aces_buy_in_chips");
     return stored ? Number(stored) : 20000;
@@ -45,7 +49,9 @@ export default function GameSetupPage() {
     localStorage.setItem("aces_players", JSON.stringify(updated));
   }
   function handleEditPlayer(idx, newPlayer) {
-    setPlayers(players.map((p, i) => (i === idx ? newPlayer : p)));
+    const updated = players.map((p, i) => (i === idx ? newPlayer : p));
+    setPlayers(updated);
+    localStorage.setItem("aces_players", JSON.stringify(updated));
   }
   function handleDeletePlayer(idx) {
     const updated = players.filter((_, i) => i !== idx);
@@ -70,14 +76,14 @@ export default function GameSetupPage() {
   return (
     <div className="w-full max-w-xs mx-auto p-4 glass-card">
       <div className="flex items-center mb-4">
-        <button className="glass-btn" onClick={() => navigate(-1)} aria-label="Back">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke="#60a5fa" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <button className="back-btn mr-2" onClick={() => navigate(-1)} aria-label="Back">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke="#60a5fa" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>
         <h2 className="text-xl font-bold">Create a new game</h2>
       </div>
       <label className="block mb-2 font-semibold text-gray-400">Game Name</label>
       <input
-        className="glass-input w-full"
+        className="glass-input w-full px-4 py-3 mb-6"
         value={gameName}
         onChange={(e) => setGameName(e.target.value)}
       />
@@ -91,18 +97,56 @@ export default function GameSetupPage() {
           <span className="font-bold text-lg">₹{buyInAmount.toLocaleString()}</span>
         </button>
       </div>
-      <label className="block text-gray-400 mb-1">Add Player</label>
       <PlayerAddForm
         onAddPlayer={handleAddPlayer}
         suggestions={players.map((p) => p.name)}
       />
       {/* Player List: newest at top */}
-      <div className="flex flex-col gap-2 mb-4">
-        {players.slice().reverse().map((player, idx) => (
-          <div key={player.name} className="glass-card-strong p-6 shadow-xl w-80">
-            {player.name}
-          </div>
-        ))}
+      <div className="flex flex-col gap-1.5 mb-4">
+        {players.slice().reverse().map((player, idx) => {
+          // Compute the real index in the original array
+          const realIdx = players.length - 1 - idx;
+          const nameExists = players.some((p, i) => i !== realIdx && p.name.toLowerCase() === editName.trim().toLowerCase());
+          return (
+            <div key={player.name} className="glass-card-strong p-6 shadow-xl w-80 flex items-center gap-2">
+              {editingIdx === realIdx ? (
+                <>
+                  <input
+                    className="flex-1 bg-transparent border-b border-blue-400 text-white px-2 py-1 outline-none"
+                    value={editName}
+                    maxLength={12}
+                    onChange={e => setEditName(e.target.value)}
+                  />
+                  <button
+                    className="ml-2 bg-blue-600 text-white px-2 py-1 rounded disabled:opacity-50"
+                    disabled={!editName.trim() || nameExists}
+                    title={nameExists ? 'Name already exists' : 'Save'}
+                    onClick={() => {
+                      handleEditPlayer(realIdx, { ...player, name: editName.trim() });
+                      setEditingIdx(null);
+                    }}
+                  >💾</button>
+                  <button
+                    className="ml-1 bg-gray-600 text-white px-2 py-1 rounded"
+                    title="Cancel"
+                    onClick={() => { setEditName(player.name); setEditingIdx(null); }}
+                  >✕</button>
+                  {nameExists && <span className="text-red-400 text-xs ml-2">Name already exists</span>}
+                </>
+              ) : (
+                <>
+                  <span className="flex-1 text-white">{player.name}</span>
+                  <button
+                    className="ml-2 text-white px-2 py-1 rounded bg-transparent hover:bg-gray-800 focus:bg-gray-800 border-none shadow-none outline-none"
+                    style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
+                    title="Edit"
+                    onClick={() => { setEditingIdx(realIdx); setEditName(player.name); }}
+                  >✎</button>
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
       <div className="mt-6">
         <button

@@ -56,31 +56,31 @@ export default function GameDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 flex flex-col items-center justify-start p-4 glass-card">
-      <div className="w-full max-w-xl glass-card p-7 mt-10">
-        <div className="flex items-center justify-between mb-4 glass-card-strong">
-          <button className="glass-btn p-2 rounded hover:bg-gray-800 focus:outline-none" onClick={() => navigate(-1)} aria-label="Back">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke="#60a5fa" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </button>
-
-          <h2 className="text-xl font-bold flex-1 text-center">
-            {localStorage.getItem('aces_game_name') || 'Game'}
-          </h2>
-
-          <button
-            className="glass-btn glass-avatar flex items-center justify-center ml-2"
-            style={{ width: 40, height: 40, minWidth: 40, minHeight: 40, padding: 0 }}
-            title="Add Player"
-            aria-label="Add Player"
-            onClick={() => setShowAddPlayer(true)}
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="10" cy="10" r="6" />
-              <path d="M19 19v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-              <line x1="17" y1="7" x2="23" y2="7" />
-              <line x1="20" y1="4" x2="20" y2="10" />
-            </svg>
-          </button>
-        </div>
+      <div className="w-full max-w-xl p-7 mt-10">
+        <div className="flex items-center mb-4">
+  <button className="back-btn mr-2" onClick={() => navigate(-1)} aria-label="Back">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke="#60a5fa" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+  </button>
+  <h2 className="text-xl font-bold flex-1 text-center">
+    {localStorage.getItem('aces_game_name') || 'Game'}
+  </h2>
+  {/* Only one Add Player button, no overlays */}
+  <button
+    className="flex items-center justify-center ml-2 rounded-lg bg-black hover:bg-gray-800 transition-colors"
+    style={{ width: 40, height: 40, minWidth: 40, minHeight: 40, padding: 0, boxShadow: 'none', border: 'none' }}
+    title="Add Player"
+    aria-label="Add Player"
+    onClick={() => setShowAddPlayer(true)}
+  >
+    {/* Single blue-stroke SVG, no fill, no overlay */}
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="10" r="5" />
+      <path d="M4 20c0-2.5 4-4 8-4s8 1.5 8 4" />
+      <line x1="22" y1="5" x2="22" y2="11" />
+      <line x1="19" y1="8" x2="25" y2="8" />
+    </svg>
+  </button>
+</div>
         <div className="flex flex-col gap-3">
           {players.length === 0 && <div className="text-gray-400 text-center">No players found.</div>}
           {players.map((p, idx) => (
@@ -140,21 +140,6 @@ export default function GameDashboardPage() {
             <span className="text-xs font-semibold">End Game</span>
           </button>
 
-          {/* Floating Add Player Button (top-right) */}
-          {/* Floating Add Player Button (top-right, aligned with back button) */}
-          <button
-            className="absolute z-40 w-12 h-12 rounded-full glass-row flex items-center justify-center text-white shadow-lg"
-            style={{ right: 24, top: 20 }}
-            onClick={() => setShowAddPlayer(true)}
-            title="Add Player"
-          >
-            {/* Add Person SVG icon */}
-            <svg width="28" height="28" fill="none" viewBox="0 0 28 28">
-              <circle cx="14" cy="11" r="5" stroke="white" strokeWidth="2"/>
-              <rect x="6" y="19" width="16" height="5" rx="2.5" stroke="white" strokeWidth="2"/>
-              <path d="M22 6v6M25 9h-6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </button>
 
           {/* Player Left Modal (no confirmation, just direct flow) */}
           {modalType === 'left' && (
@@ -207,7 +192,7 @@ export default function GameDashboardPage() {
 
           {/* Add Player Modal (dashboard) */}
           {showAddPlayer && (
-            <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center" onClick={closeModal}>
+            <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center" onClick={() => setShowAddPlayer(false)}>
               <div className="glass-modal p-6 w-80 flex flex-col gap-4 shadow-xl" onClick={e => e.stopPropagation()}>
                 <h3 className="text-lg font-bold text-white mb-2">Add Player</h3>
                 <div className="flex gap-2 items-center">
@@ -238,6 +223,10 @@ export default function GameDashboardPage() {
                 {addPlayerName && players.some(p => p.name.toLowerCase() === addPlayerName.trim().toLowerCase()) && (
                   <div className="text-red-400 text-xs mt-1">Name already exists</div>
                 )}
+                <button
+                  className="mt-2 bg-gray-700 text-gray-200 px-3 py-2 rounded hover:bg-gray-600"
+                  onClick={() => setShowAddPlayer(false)}
+                >Cancel</button>
               </div>
             </div>
           )}
@@ -246,6 +235,7 @@ export default function GameDashboardPage() {
         </div>
       </div>
       {/* Modal */}
+
 
     </div>
   );
