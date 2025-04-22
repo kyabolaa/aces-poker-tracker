@@ -142,6 +142,12 @@ export default function GameSetupPage() {
                     title="Edit"
                     onClick={() => { setEditingIdx(realIdx); setEditName(player.name); }}
                   >✎</button>
+                  <button
+                    className="ml-1 text-white px-2 py-1 rounded bg-transparent hover:bg-red-700 focus:bg-red-700 border-none shadow-none outline-none"
+                    style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
+                    title="Delete"
+                    onClick={() => handleDeletePlayer(realIdx)}
+                  >🗑️</button>
                 </>
               )}
             </div>
