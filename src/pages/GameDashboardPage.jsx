@@ -67,13 +67,13 @@ export default function GameDashboardPage() {
   {/* Only one Add Player button, no overlays */}
   <button
     className="flex items-center justify-center ml-2 rounded-lg bg-black hover:bg-gray-800 transition-colors"
-    style={{ width: 40, height: 40, minWidth: 40, minHeight: 40, padding: 0, boxShadow: 'none', border: 'none' }}
+    style={{ width: 36, height: 36, padding: 0, boxShadow: 'none', border: 'none' }}
     title="Add Player"
     aria-label="Add Player"
     onClick={() => setShowAddPlayer(true)}
   >
     {/* Single blue-stroke SVG, no fill, no overlay */}
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="10" r="5" />
       <path d="M4 20c0-2.5 4-4 8-4s8 1.5 8 4" />
       <line x1="22" y1="5" x2="22" y2="11" />
@@ -125,7 +125,7 @@ export default function GameDashboardPage() {
           {/* Floating Player Left Button (below last row, bottom-left) */}
           <button
             className="absolute z-40 w-14 h-14 rounded-full glass-row flex items-center justify-center text-white font-semibold text-xs shadow-lg"
-            style={{ left: -40, top: 116 + (players.length * 56) + 112 }}
+            style={{ left: 16, top: 116 + (players.length * 56) + 112 }}
             onClick={() => setModalType('left')}
           >
             <span className="text-xs font-semibold">Player Left</span>
@@ -134,7 +134,7 @@ export default function GameDashboardPage() {
           {/* Floating End Game Button (below last row, bottom-right) */}
           <button
             className="absolute z-40 w-14 h-14 rounded-full glass-row flex items-center justify-center text-white font-semibold text-xs shadow-lg"
-            style={{ right: -40, top: 116 + (players.length * 56) + 112 }}
+            style={{ right: 16, top: 116 + (players.length * 56) + 112 }}
             onClick={handleEndGame}
           >
             <span className="text-xs font-semibold">End Game</span>

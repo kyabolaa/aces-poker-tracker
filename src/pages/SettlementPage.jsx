@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FoodBillModal from "../components/FoodBillModal";
 import ExportButton from "../components/ExportButton";
+import SwipeToSettleButton from "../components/SwipeToSettleButton";
 import { getSettlementExportText } from "./SettlementPage.export";
 
 // Custom input for chip count with comma-formatting and cursor preservation
@@ -42,7 +44,17 @@ function ChipInput({ value, onChange }) {
   );
 }
 
+function saveGameToHistory({ players, winLoss, date }) {
+  // Read existing history
+  const history = JSON.parse(localStorage.getItem('aces_game_history') || '[]');
+  // Add new game to top
+  history.unshift({ players, winLoss, date });
+  // Save back
+  localStorage.setItem('aces_game_history', JSON.stringify(history));
+}
+
 export default function SettlementPage() {
+  const navigate = useNavigate();
   const [exportCopied, setExportCopied] = useState(false);
 
   function handleExport() {
@@ -94,6 +106,26 @@ export default function SettlementPage() {
 
   // Debug: log players to verify buyInCount
   console.log("SettlementPage players:", players);
+
+  function handleSettled() {
+    // Collect game data
+    const now = new Date();
+    const dateString = now.toISOString();
+    // Collect player results for history
+    const playerResults = players.map(p => ({
+      name: p.name,
+      winLoss: (showPostFood && foodBill
+        ? postFoodWinLoss.find(wl => wl.name === p.name)?.value
+        : winLoss.find(wl => wl.name === p.name)?.value) || 0
+    }));
+    saveGameToHistory({
+      players: playerResults,
+      winLoss: playerResults.map(pr => pr.winLoss),
+      date: dateString
+    });
+    // Redirect to homepage after settling
+    navigate('/');
+  }
 
   // If any player is missing buyInCount, try to load from aces_final_players by name
   let buyInMap = {};
@@ -239,21 +271,51 @@ export default function SettlementPage() {
           </tfoot>
         </table>
         {/* Food Bill & Export Buttons below the box, mobile-friendly (ONLY ONCE) */}
-        <div className="w-full flex justify-center mt-3 mb-2 gap-3">
-          <button
-            className="glass-btn flex items-center justify-center gap-2 py-3 text-base font-semibold w-36 max-w-xs bg-blue-700 bg-opacity-50 hover:bg-blue-800 hover:bg-opacity-70 text-white shadow-lg"
-            style={{backdropFilter: 'blur(8px)', border: 'none'}}
-            onClick={handleExport}
-          >
-            <span role="img" aria-label="Export" style={{fontSize: '1.3em'}}>📋</span> Export
-          </button>
-          <button
-            className="glass-btn flex items-center justify-center gap-2 py-3 text-base font-semibold w-36 max-w-xs text-white shadow-lg"
-            style={{ background: "rgba(34,197,94,0.18)", backdropFilter: "blur(8px)", border: 'none' }}
-            onClick={handleOpenFoodModal}
-          >
-            <span role="img" aria-label="Food" style={{fontSize: '1.3em'}}>🍽</span> Food Bill
-          </button>
+        <div className="w-full flex flex-col items-center mt-3 mb-0 gap-0">
+          <div className="flex justify-center gap-3 w-full">
+            <button
+              className="glass-btn flex items-center justify-center text-base font-semibold w-36 max-w-xs px-4 py-2 rounded-xl shadow-lg border-none transition-all"
+              style={{
+                background: 'rgba(44, 62, 80, 0.35)',
+                backdropFilter: 'blur(10px)',
+                border: '1.5px solid rgba(255,255,255,0.10)',
+                color: '#e0e8ff',
+                boxShadow: '0 4px 24px 0 rgba(30, 60, 120, 0.15)',
+                fontWeight: 600,
+                letterSpacing: '0.02em',
+                WebkitBackdropFilter: 'blur(10px)'
+              }}
+              onClick={handleExport}
+            >
+              Export
+            </button>
+            <button
+              className="glass-btn flex items-center justify-center text-base font-semibold w-36 max-w-xs px-4 py-2 rounded-xl shadow-lg border-none transition-all"
+              style={{
+                background: 'rgba(34,197,94,0.13)',
+                backdropFilter: 'blur(10px)',
+                border: '1.5px solid rgba(255,255,255,0.09)',
+                color: '#e0ffe8',
+                boxShadow: '0 4px 24px 0 rgba(30, 120, 60, 0.10)',
+                fontWeight: 600,
+                letterSpacing: '0.02em',
+                WebkitBackdropFilter: 'blur(10px)'
+              }}
+              onClick={handleOpenFoodModal}
+            >
+              Food Bill
+            </button>
+          </div>
+          {exportCopied && (
+            <div className="text-green-300 text-xs mt-2 mb-1 transition-opacity duration-300" style={{ minHeight: 18 }}>
+              Copied
+            </div>
+          )}
+          {/* Add extra space below to make room for confirmation */}
+          <div style={{ height: exportCopied ? 10 : 18 }} />
+        </div>
+        <div className="w-full flex justify-center mt-2 mb-2">
+          <SwipeToSettleButton onSettle={handleSettled} />
         </div>
       </div>
       <FoodBillModal
